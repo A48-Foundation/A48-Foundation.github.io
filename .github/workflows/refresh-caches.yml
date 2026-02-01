@@ -33,7 +33,7 @@ jobs:
 
       - name: Rebuild caches for all wikis
         run: |
-          python app.py --rebuild --all
+          python app.py --rebuild --shard hspolicy25
 
       - name: Commit and push if changed
         run: |
