@@ -2,7 +2,10 @@ name: Refresh caches
 
 on:
   schedule:
-    - cron: "0 8 * * 6" # weekly on Saturday at 08:00 UTC
+    - cron: "0 8 * * 4"
+    - cron: "0 8 * * 5"
+    - cron: "0 8 * * 6"
+    - cron: "0 8 * * 0"
   workflow_dispatch:
 
 permissions:
@@ -15,25 +18,37 @@ jobs:
     env:
       OC_USERNAME: ${{ secrets.OC_USERNAME }}
       OC_PASSWORD: ${{ secrets.OC_PASSWORD }}
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: |
+      - run: |
           python -m pip install --upgrade pip
           pip install requests flask
 
-      - name: Rebuild caches for all wikis
+      # Determine which shard to run
+      - name: Pick shard from schedule
         run: |
-          python app.py --rebuild --shard hspolicy25
+          case "${{ github.event.schedule }}" in
+            "0 8 * * 4") echo "SHARD=hspolicy25" >> $GITHUB_ENV ;;
+            "0 8 * * 5") echo "SHARD=ndtceda25" >> $GITHUB_ENV ;;
+            "0 8 * * 6") echo "SHARD=hsld25" >> $GITHUB_ENV ;;
+            "0 8 * * 0") echo "SHARD=hspf25" >> $GITHUB_ENV ;;
+          esac
+
+      # Default shard if manually triggered
+      - name: Default shard for manual run
+        if: github.event.schedule == ''
+        run: echo "SHARD=hspolicy25" >> $GITHUB_ENV
+
+      - name: Rebuild selected shard
+        run: python app.py --rebuild --shard "$SHARD"
 
       - name: Commit and push if changed
         run: |
