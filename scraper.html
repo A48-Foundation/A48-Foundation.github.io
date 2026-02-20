@@ -385,6 +385,14 @@
       throw lastError || new Error("Failed to load cache");
     }
 
+    // school shorthands (will search for this and exact text match)
+    const SHORTHAND_MAP = {
+      mba: "montgomery bell",
+      gbn: "glenbrook north",
+      gbs: "glenbrook south",
+      ilake: "interlake",
+    };
+
     function filterRounds(query, rounds, { sideFilters, openSourceOnly }) {
       const q = query.toLowerCase().trim();
       const words = q.split(/\s+/);
@@ -399,6 +407,8 @@
             "i"
           )
         : null;
+
+      const expandedSchoolQuery = SHORTHAND_MAP[schoolQuery] || null;
 
       return rounds.filter((r) => {
         const report = (r.report || "").toLowerCase();
@@ -419,7 +429,7 @@
         const teamCodeMatch =
           isPotentialTeamCode &&
           teamCodeRegex.test(team.split(" ").pop()) &&
-          school.includes(schoolQuery);
+          (school.includes(schoolQuery) || (expandedSchoolQuery && school.includes(expandedSchoolQuery)));
 
         return sideOk && openSourceOk && (exactMatch || teamCodeMatch);
       });
