@@ -271,7 +271,7 @@
         class="help-badge"
         data-tip="You need to be logged in to opencaselist.com for downloading to work (you can log in in a separate tab).
         
-        Search text is exact match against team/school/report/tournament."
+        Search text is mostly exact match against team/school/report/tournament. If you search for something that looks like a team code (e.g. Interlake CW) it will search for those as well, agnostic to the order of the last"
         aria-label="Troubleshooting"
         role="img"
       >?</span>
@@ -281,8 +281,8 @@
       <input id="searchInput" type="text" placeholder="Search (filename, school, etc.)" />
       <div class="toggle-group" id="sideButtons">
         <span class="pill-label">Side</span>
-        <button type="button" data-value="A" class="active">Aff (A)</button>
-        <button type="button" data-value="N" class="active">Neg (N)</button>
+        <button type="button" data-value="A" class="active">Aff</button>
+        <button type="button" data-value="N" class="active">Neg</button>
       </div>
       <label style="font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px;">
         <input type="checkbox" id="openSourceOnly" />
@@ -292,7 +292,7 @@
         <span class="pill-label">Wiki</span>
         <button type="button" data-value="hspolicy25" class="active">HS Policy</button>
         <button type="button" data-value="ndtceda25" class="active">NDT/CEDA</button>
-        <button type="button" data-value="hsld25" class="active">LD</button>
+        <button type="button" data-value="hsld25" class="active">HS LD</button>
       </div>
       <button type="button" id="toggleHistoricalBtn" class="historical-toggle">Show historical wikis</button>
     </div>
@@ -309,7 +309,7 @@
         <button type="button" data-value="ndtceda22">NDT/CEDA 22</button>
         <button type="button" data-value="ndtceda21">NDT/CEDA 21</button>
         <button type="button" data-value="ndtceda20">NDT/CEDA 20</button>
-        <button type="button" data-value="hsld24">LD 24</button>
+        <button type="button" data-value="hsld24">HS LD 24</button>
       </div>
     </div>
     <div class="controls actions" style="gap:12px; flex-wrap:wrap;">
