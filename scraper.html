@@ -337,12 +337,12 @@
 
   <script>
     const CACHE_URLS = (shard) => [
-      `caches/round_cache_${shard}.json`, // shard-specific in caches/ next to page
-      `/caches/round_cache_${shard}.json`, // shard-specific in caches/ at root
-      `round_cache_${shard}.json`, // shard-specific next to page
-      `round_cache.json`, // default next to page
-      `/round_cache_${shard}.json`, // shard-specific at root
-      `/round_cache.json`, // default at root
+      `caches/round_cache_${shard}.json`,
+      `/caches/round_cache_${shard}.json`,
+      `round_cache_${shard}.json`,
+      `round_cache.json`,
+      `/round_cache_${shard}.json`,
+      `/round_cache.json`,
     ];
 
     const cacheByShard = {};
@@ -386,7 +386,20 @@
     }
 
     function filterRounds(query, rounds, { sideFilters, openSourceOnly }) {
-      const q = query.toLowerCase();
+      const q = query.toLowerCase().trim();
+      const words = q.split(/\s+/);
+      const schoolQuery = words.slice(0, -1).join(" ");
+      const potentialTeamCode = words[words.length - 1];
+
+      const isPotentialTeamCode = potentialTeamCode && potentialTeamCode.length === 2;
+
+      const teamCodeRegex = isPotentialTeamCode
+        ? new RegExp(
+            `^(${potentialTeamCode[0]}.{1}${potentialTeamCode[1]}.{1}|${potentialTeamCode[1]}.{1}${potentialTeamCode[0]}.{1})$`,
+            "i"
+          )
+        : null;
+
       return rounds.filter((r) => {
         const report = (r.report || "").toLowerCase();
         const team = (r.team || "").toLowerCase();
@@ -397,13 +410,18 @@
         const hasOpenSource = !!r.file_url;
         const openSourceOk = !openSourceOnly || hasOpenSource;
 
-        const textMatch =
+        const exactMatch =
           report.includes(q) ||
           team.includes(q) ||
           school.includes(q) ||
           tournament.includes(q);
 
-        return sideOk && openSourceOk && textMatch;
+        const teamCodeMatch =
+          isPotentialTeamCode &&
+          teamCodeRegex.test(team.split(" ").pop()) &&
+          school.includes(schoolQuery);
+
+        return sideOk && openSourceOk && (exactMatch || teamCodeMatch);
       });
     }
 
@@ -420,7 +438,6 @@
 
       items.forEach((item) => {
         const row = document.createElement("tr");
-        // Normalize download path for direct API download; if missing, leave as null.
         const downloadPath =
           item.download_path ||
           (item.file_url && item.file_url.replace(/^\/?files\//, "")) ||
@@ -529,7 +546,7 @@
         renderResults(results);
         setLastUpdated(latestBuiltAt, selectedWikis);
       } catch {
-        return; // Status already set in loadCacheOnce
+        return;
       }
     }
 
