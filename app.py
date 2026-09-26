@@ -11,8 +11,8 @@ from flask import Flask, Response, jsonify, request, send_from_directory
 BASE_URL = "https://api.opencaselist.com/v1"
 OC_USERNAME = os.environ.get("OC_USERNAME")
 OC_PASSWORD = os.environ.get("OC_PASSWORD")
-DEFAULT_SHARD = "hspolicy25"
-KNOWN_SHARDS = ["hspolicy25", "ndtceda25", "hsld25", "hspf25"]
+DEFAULT_SHARD = "hspolicy26"
+KNOWN_SHARDS = ["hspolicy26", "ndtceda26", "hsld26", "hspf26"]
 CACHE_DIR = "caches"
 
 session = requests.Session()
