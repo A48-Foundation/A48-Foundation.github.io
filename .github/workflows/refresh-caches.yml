@@ -1,6 +1,5 @@
 name: Refresh caches
 
-
 on:
   schedule:
     - cron: "0 8 * * 4"
@@ -33,23 +32,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests flask
 
-      # Determine which shard to run
-      - name: Pick shard from schedule
+      # Determine which shard(s) to process
+      - name: Determine shards to run
         run: |
           case "${{ github.event.schedule }}" in
-            "0 8 * * 4") echo "SHARD=hspolicy26" >> $GITHUB_ENV ;;
-            "0 8 * * 5") echo "SHARD=ndtceda26" >> $GITHUB_ENV ;;
-            "0 8 * * 6") echo "SHARD=hsld26" >> $GITHUB_ENV ;;
-            "0 8 * * 0") echo "SHARD=hspf26" >> $GITHUB_ENV ;;
+            "0 8 * * 4") echo "SHARDS=hspolicy26" >> $GITHUB_ENV ;;
+            "0 8 * * 5") echo "SHARDS=ndtceda26" >> $GITHUB_ENV ;;
+            "0 8 * * 6") echo "SHARDS=hsld26" >> $GITHUB_ENV ;;
+            "0 8 * * 0") echo "SHARDS=hspf26" >> $GITHUB_ENV ;;
+            *) echo "SHARDS=hspolicy26 ndtceda26 hsld26 hspf26" >> $GITHUB_ENV ;;
           esac
 
-      # Default shard if manually triggered
-      - name: Default shard for manual run
-        if: github.event.schedule == ''
-        run: echo "SHARD=hspolicy26" >> $GITHUB_ENV
-
-      - name: Rebuild selected shard
-        run: python app.py --rebuild --shard "$SHARD"
+      - name: Rebuild shards
+        run: |
+          for shard in $SHARDS; do
+            echo "Rebuilding shard: $shard"
+            python app.py --rebuild --shard "$shard"
+          done
 
       - name: Commit and push if changed
         run: |
