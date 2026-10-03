@@ -37,16 +37,16 @@ jobs:
       - name: Pick shard from schedule
         run: |
           case "${{ github.event.schedule }}" in
-            "0 8 * * 4") echo "SHARD=hspolicy25" >> $GITHUB_ENV ;;
-            "0 8 * * 5") echo "SHARD=ndtceda25" >> $GITHUB_ENV ;;
-            "0 8 * * 6") echo "SHARD=hsld25" >> $GITHUB_ENV ;;
-            "0 8 * * 0") echo "SHARD=hspf25" >> $GITHUB_ENV ;;
+            "0 8 * * 4") echo "SHARD=hspolicy26" >> $GITHUB_ENV ;;
+            "0 8 * * 5") echo "SHARD=ndtceda26" >> $GITHUB_ENV ;;
+            "0 8 * * 6") echo "SHARD=hsld26" >> $GITHUB_ENV ;;
+            "0 8 * * 0") echo "SHARD=hspf26" >> $GITHUB_ENV ;;
           esac
 
       # Default shard if manually triggered
       - name: Default shard for manual run
         if: github.event.schedule == ''
-        run: echo "SHARD=hspolicy25" >> $GITHUB_ENV
+        run: echo "SHARD=hspolicy26" >> $GITHUB_ENV
 
       - name: Rebuild selected shard
         run: python app.py --rebuild --shard "$SHARD"
